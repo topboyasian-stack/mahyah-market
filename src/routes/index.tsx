@@ -1,47 +1,267 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-type Product={id:number;name:string;category:string;price:number;oldPrice?:number;rating:string;verified?:boolean;deal?:string;art:string};
-const categories=["All","Phones & Tablets","Computers","TV & Audio","Appliances","Accessories"];
-const products:Product[]=[
-{id:1,name:"Itel 8KG Front Load Automatic Washing Machine",category:"Appliances",price:420000,oldPrice:450000,rating:"4.9",verified:true,deal:"7% OFF",art:"washer"},
-{id:2,name:"Itel Split Inverter Air Conditioner",category:"Appliances",price:385000,rating:"4.8",verified:true,art:"ac"},
-{id:3,name:"Smart Android LED Television",category:"TV & Audio",price:285000,rating:"4.8",verified:true,art:"tv"},
-{id:4,name:"Wireless Bluetooth Speaker",category:"TV & Audio",price:68500,rating:"4.7",verified:true,art:"speaker"},
-{id:5,name:"Fast-Charge Power Bank 20,000mAh",category:"Accessories",price:38500,rating:"4.9",verified:true,deal:"HOT DEAL",art:"power"},
-{id:6,name:"Android Smartphone — 128GB",category:"Phones & Tablets",price:195000,rating:"4.8",verified:true,art:"phone"},
-{id:7,name:"Everyday Laptop Backpack",category:"Computers",price:42000,rating:"4.7",verified:true,art:"bag"},
-{id:8,name:"Wireless Keyboard & Mouse Combo",category:"Computers",price:32500,rating:"4.8",verified:true,art:"keyboard"}];
-const naira=(v:number)=>`₦${v.toLocaleString("en-NG")}`;
-function ProductArt({kind}:{kind:string}){return <svg viewBox="0 0 400 300" className="product-art" role="img" aria-label="Product illustration">
-<rect width="400" height="300" fill="#17191C"/>
-{kind==="washer"&&<><circle cx="205" cy="156" r="82" fill="#E8EAEC"/><circle cx="205" cy="156" r="58" fill="#27323A"/><circle cx="205" cy="156" r="45" fill="#0D1114"/><rect x="120" y="48" width="170" height="32" rx="8" fill="#E8EAEC"/><circle cx="145" cy="64" r="7" fill="#D86B35"/><text x="166" y="69" fill="#34383C" fontSize="13" fontFamily="Arial">8KG • FRONT LOAD</text></>}
-{kind==="ac"&&<><rect x="65" y="92" width="270" height="112" rx="14" fill="#F0F1F2"/><rect x="82" y="116" width="236" height="56" rx="8" fill="#D9DDE0"/><path d="M105 140h190" stroke="#A8B0B5" strokeWidth="5" strokeDasharray="9 9"/><circle cx="290" cy="103" r="6" fill="#D86B35"/><text x="90" y="190" fill="#5B6166" fontSize="12" fontFamily="Arial">INVERTER • SPLIT AC</text></>}
-{kind==="tv"&&<><rect x="62" y="62" width="276" height="170" rx="8" fill="#090B0D" stroke="#7E858A" strokeWidth="3"/><rect x="76" y="76" width="248" height="142" fill="#252D35"/><path d="M105 178c35-48 62-47 93-10 34-48 65-42 97 5" fill="none" stroke="#D86B35" strokeWidth="7"/><rect x="180" y="232" width="50" height="9" rx="4" fill="#858B90"/></>}
-{kind==="speaker"&&<><rect x="128" y="48" width="144" height="210" rx="24" fill="#252A2E"/><circle cx="200" cy="116" r="38" fill="#0C0F11" stroke="#D86B35" strokeWidth="5"/><circle cx="200" cy="116" r="13" fill="#D86B35"/><circle cx="200" cy="198" r="25" fill="#0C0F11" stroke="#777F85" strokeWidth="4"/></>}
-{kind==="power"&&<><rect x="128" y="46" width="144" height="210" rx="18" fill="#F1F2F3"/><rect x="154" y="78" width="92" height="34" rx="7" fill="#1E252A"/><text x="169" y="101" fill="#D86B35" fontSize="14" fontFamily="Arial">20,000</text><circle cx="200" cy="166" r="34" fill="#D86B35"/><path d="M200 142v48M176 166h48" stroke="#fff" strokeWidth="5"/></>}
-{kind==="phone"&&<><rect x="137" y="28" width="126" height="244" rx="24" fill="#DDE1E4"/><rect x="147" y="45" width="106" height="204" rx="17" fill="#1A252C"/><circle cx="200" cy="144" r="45" fill="#273841"/><circle cx="186" cy="130" r="13" fill="#D86B35"/><circle cx="214" cy="130" r="13" fill="#9AA4A9"/><rect x="185" y="220" width="30" height="5" rx="2" fill="#7C858A"/></>}
-{kind==="bag"&&<><path d="M102 94h196l-18 166H120z" fill="#4A3E36"/><path d="M150 96c0-65 100-65 100 0" fill="none" stroke="#D86B35" strokeWidth="13"/><rect x="133" y="138" width="134" height="9" rx="4" fill="#75665A"/></>}
-{kind==="keyboard"&&<><rect x="62" y="88" width="276" height="126" rx="14" fill="#E7E9EA"/>{Array.from({length:24},(_,i)=><rect key={i} x={82+(i%8)*30} y={108+Math.floor(i/8)*29} width="22" height="18" rx="3" fill="#7A8186"/>)}<rect x="142" y="195" width="116" height="8" rx="4" fill="#7A8186"/></>}
-</svg>}
+type Product = {
+  id:number;
+  name:string;
+  category:string;
+  price:number;
+  oldPrice?:number;
+  rating:string;
+  verified?:boolean;
+  deal?:string;
+  art:string;
+  description:string;
+};
+
+type Route = {
+  view:"home"|"listing"|"product"|"cart"|"checkout"|"support";
+  category:string;
+  query:string;
+  productId:number|null;
+};
+
+const categories = ["All","Phones & Tablets","Computers","TV & Audio","Appliances","Accessories"];
+
+const products:Product[] = [
+  {id:1,name:"Itel 8KG Front Load Automatic Washing Machine",category:"Appliances",price:420000,oldPrice:450000,rating:"4.9",verified:true,deal:"7% OFF",art:"washer",description:"A practical 8KG front-load washing machine presented with clear pricing, delivery information and an easy checkout path."},
+  {id:2,name:"Itel Split Inverter Air Conditioner",category:"Appliances",price:385000,oldPrice:410000,rating:"4.8",verified:true,art:"ac",description:"A clean inverter split AC listing with the key purchase information kept visible before checkout."},
+  {id:3,name:"Smart Android LED Television",category:"TV & Audio",price:285000,rating:"4.8",verified:true,art:"tv",description:"A smart LED television for home entertainment, shown in a simple product-first marketplace layout."},
+  {id:4,name:"Wireless Bluetooth Speaker",category:"TV & Audio",price:68500,rating:"4.7",verified:true,art:"speaker",description:"Portable wireless audio for everyday listening with a clear price and fast route to checkout."},
+  {id:5,name:"Fast-Charge Power Bank 20,000mAh",category:"Accessories",price:38500,rating:"4.9",verified:true,deal:"HOT DEAL",art:"power",description:"A high-capacity power bank listing with the important capacity and price information immediately visible."},
+  {id:6,name:"Android Smartphone — 128GB",category:"Phones & Tablets",price:195000,rating:"4.8",verified:true,art:"phone",description:"A 128GB Android smartphone product page designed to make comparison and purchase straightforward."},
+  {id:7,name:"Everyday Laptop Backpack",category:"Computers",price:42000,rating:"4.7",verified:true,art:"bag",description:"A simple laptop-carry option presented inside the computer category."},
+  {id:8,name:"Wireless Keyboard & Mouse Combo",category:"Computers",price:32500,rating:"4.8",verified:true,art:"keyboard",description:"A wireless keyboard and mouse combo for home, office and everyday computer setups."}
+];
+
+const naira = (value:number) => "₦" + value.toLocaleString("en-NG");
+
+function readRoute():Route {
+  const raw = window.location.hash.replace(/^#\/?/, "");
+  if (!raw) return {view:"home",category:"All",query:"",productId:null};
+  const parts = raw.split("/");
+  if (parts[0] === "category") return {view:"listing",category:decodeURIComponent(parts.slice(1).join("/") || "All"),query:"",productId:null};
+  if (parts[0] === "search") return {view:"listing",category:"All",query:decodeURIComponent(parts.slice(1).join("/")),productId:null};
+  if (parts[0] === "deals") return {view:"listing",category:"Deals",query:"",productId:null};
+  if (parts[0] === "product") return {view:"product",category:"All",query:"",productId:Number(parts[1]) || null};
+  if (parts[0] === "cart") return {view:"cart",category:"All",query:"",productId:null};
+  if (parts[0] === "checkout") return {view:"checkout",category:"All",query:"",productId:null};
+  if (parts[0] === "support") return {view:"support",category:"All",query:"",productId:null};
+  return {view:"home",category:"All",query:"",productId:null};
+}
+
 function SearchIcon(){return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
 function BagIcon(){return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5z" fill="none" stroke="currentColor" strokeWidth="1.7"/><path d="M9 9V7a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>}
+function UserIcon(){return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.7"/><path d="M5.5 20c.8-3.5 3-5.2 6.5-5.2s5.7 1.7 6.5 5.2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>}
+function Chevron(){return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+function Arrow(){return <span aria-hidden="true">↗</span>}
+
+function Brand(){
+  return <span className="brand-mark-wrap">
+    <span className="brand-mark"><span>M</span></span>
+    <span className="brand-word">MAH-YAH <b>GADGETS</b></span>
+  </span>
+}
+
+function ProductArt({kind}:{kind:string}){
+  return <svg viewBox="0 0 520 380" className="product-art" role="img" aria-label="Product illustration">
+    <rect width="520" height="380" rx="22" fill="#EDF5FF"/>
+    <circle cx="430" cy="74" r="46" fill="#DCEAFF"/>
+    <circle cx="86" cy="315" r="66" fill="#F2F8FF"/>
+    {kind==="washer"&&<><rect x="118" y="42" width="284" height="292" rx="24" fill="#F8FAFC" stroke="#C7D2E0" strokeWidth="4"/><rect x="142" y="65" width="236" height="48" rx="12" fill="#E4EAF0"/><circle cx="167" cy="89" r="9" fill="#0B63E5"/><rect x="190" y="82" width="100" height="14" rx="7" fill="#94A3B8"/><rect x="305" y="79" width="48" height="20" rx="9" fill="#D1FAE5"/><circle cx="206" cy="208" r="92" fill="#C9D5E0"/><circle cx="206" cy="208" r="72" fill="#22364C"/><circle cx="206" cy="208" r="53" fill="#0F172A"/><circle cx="185" cy="188" r="18" fill="#234667" opacity=".8"/><rect x="295" y="173" width="63" height="9" rx="4" fill="#94A3B8"/><rect x="295" y="192" width="47" height="9" rx="4" fill="#CBD5E1"/><rect x="295" y="211" width="57" height="9" rx="4" fill="#CBD5E1"/></>}
+    {kind==="ac"&&<><rect x="72" y="111" width="376" height="146" rx="28" fill="#F9FBFD" stroke="#C7D2E0" strokeWidth="4"/><rect x="96" y="143" width="328" height="65" rx="14" fill="#E2EAF2"/><path d="M117 174h286" stroke="#9FB0C0" strokeWidth="7" strokeDasharray="14 12" strokeLinecap="round"/><circle cx="385" cy="128" r="8" fill="#16A34A"/><rect x="127" y="229" width="96" height="10" rx="5" fill="#0B63E5"/><rect x="239" y="229" width="128" height="10" rx="5" fill="#CBD5E1"/></>}
+    {kind==="tv"&&<><rect x="64" y="48" width="392" height="242" rx="22" fill="#071426" stroke="#64748B" strokeWidth="4"/><rect x="84" y="69" width="352" height="198" rx="14" fill="#173A66"/><path d="M112 220c54-78 92-72 142-18 48-70 101-55 156 11" fill="none" stroke="#79B5FF" strokeWidth="13" strokeLinecap="round"/><circle cx="345" cy="118" r="38" fill="#0B63E5" opacity=".42"/><rect x="207" y="304" width="106" height="13" rx="7" fill="#64748B"/><rect x="168" y="317" width="184" height="10" rx="5" fill="#CBD5E1"/></>}
+    {kind==="speaker"&&<><rect x="142" y="46" width="236" height="288" rx="42" fill="#15243A"/><rect x="160" y="64" width="200" height="252" rx="34" fill="#233B57"/><circle cx="260" cy="145" r="58" fill="#0F172A" stroke="#6EAFFF" strokeWidth="7"/><circle cx="260" cy="145" r="19" fill="#0B63E5"/><circle cx="260" cy="246" r="40" fill="#0F172A" stroke="#94A3B8" strokeWidth="6"/><circle cx="260" cy="246" r="10" fill="#94A3B8"/></>}
+    {kind==="power"&&<><rect x="162" y="38" width="196" height="304" rx="28" fill="#FFFFFF" stroke="#C7D2E0" strokeWidth="4"/><rect x="188" y="76" width="144" height="54" rx="13" fill="#12253E"/><text x="215" y="111" fill="#D6E8FF" fontSize="22" fontFamily="Arial" fontWeight="700">20,000</text><circle cx="260" cy="214" r="52" fill="#0B63E5"/><path d="M260 176v76M222 214h76" stroke="#fff" strokeWidth="9" strokeLinecap="round"/><text x="219" y="299" fill="#64748B" fontSize="16" fontFamily="Arial">FAST CHARGE</text></>}
+    {kind==="phone"&&<><rect x="164" y="26" width="192" height="326" rx="34" fill="#DDE7F1" stroke="#93A4B6" strokeWidth="4"/><rect x="180" y="47" width="160" height="284" rx="24" fill="#0F2946"/><rect x="194" y="62" width="132" height="236" rx="18" fill="#193F68"/><circle cx="260" cy="176" r="53" fill="#0B63E5" opacity=".32"/><circle cx="242" cy="158" r="17" fill="#8CC3FF"/><circle cx="278" cy="158" r="17" fill="#CBD5E1"/><rect x="221" y="275" width="78" height="6" rx="3" fill="#7EA0C3"/></>}
+    {kind==="bag"&&<><path d="M110 112h300l-27 222H137z" fill="#193B62"/><path d="M177 114c0-76 166-76 166 0" fill="none" stroke="#0B63E5" strokeWidth="19"/><rect x="156" y="171" width="208" height="11" rx="5" fill="#6D8BAA"/><rect x="156" y="198" width="120" height="8" rx="4" fill="#90A7BE"/></>}
+    {kind==="keyboard"&&<><rect x="55" y="91" width="300" height="158" rx="18" fill="#F8FAFC" stroke="#B8C6D5" strokeWidth="4"/>{Array.from({length:32},(_,i)=><rect key={i} x={76+(i%8)*32} y={114+Math.floor(i/8)*30} width="24" height="20" rx="5" fill="#8293A6"/>)}<rect x="160" y="222" width="125" height="9" rx="4" fill="#CBD5E1"/><rect x="384" y="147" width="80" height="92" rx="18" fill="#F8FAFC" stroke="#B8C6D5" strokeWidth="4"/><circle cx="424" cy="178" r="13" fill="#0B63E5"/><circle cx="424" cy="212" r="13" fill="#DCEAFF"/></>}
+  </svg>
+}
+
+function ProductCard({product,onDetails,onAdd}:{product:Product;onDetails:(p:Product)=>void;onAdd:(p:Product)=>void}){
+  return <article className="product-card">
+    <button className="product-image-button" onClick={()=>onDetails(product)} aria-label={"View " + product.name}>
+      <div className="product-image"><ProductArt kind={product.art}/>{product.deal&&<span className="product-badge">{product.deal}</span>}{product.verified&&<span className="verified-badge">✓ Verified</span>}</div>
+    </button>
+    <div className="product-info">
+      <div className="product-meta"><span>{product.category}</span><span>★ {product.rating}</span></div>
+      <button className="product-title" onClick={()=>onDetails(product)}>{product.name}</button>
+      <div className="product-price-row"><div><strong>{naira(product.price)}</strong>{product.oldPrice&&<del>{naira(product.oldPrice)}</del>}</div></div>
+      <div className="product-actions"><button className="details-btn" onClick={()=>onDetails(product)}>View details</button><button className="add-btn" onClick={()=>onAdd(product)}>Add <span>+</span></button></div>
+    </div>
+  </article>
+}
+
+function Header({cartCount,onSearch}:{cartCount:number;onSearch:(q:string)=>void}){
+  const [search,setSearch] = useState("");
+  const [menu,setMenu] = useState(false);
+  const submit = (e:React.FormEvent) => {e.preventDefault(); if(search.trim()) onSearch(search.trim());};
+  return <header className="site-header">
+    <div className="header-inner">
+      <button className="brand-button" onClick={()=>window.location.hash="#/"}><Brand/></button>
+      <form className="header-search" onSubmit={submit}><SearchIcon/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search gadgets, appliances & more"/><button type="submit">Search</button></form>
+      <div className="header-tools">
+        <span className="currency">₦ NGN</span>
+        <button className="tool-button" aria-label="Customer account"><UserIcon/><span>Account</span></button>
+        <button className="tool-button cart-tool" onClick={()=>window.location.hash="#/cart"} aria-label="Open cart"><BagIcon/><span>Cart</span>{cartCount>0&&<em>{cartCount}</em>}</button>
+      </div>
+    </div>
+    <div className="nav-row">
+      <div className="nav-inner">
+        <button className="category-trigger" onClick={()=>setMenu(!menu)}>Categories <Chevron/></button>
+        <nav>
+          <button onClick={()=>window.location.hash="#/"}>Home</button>
+          <button onClick={()=>window.location.hash="#/deals"}>Deals</button>
+          <button onClick={()=>window.location.hash="#/support"}>Customer care</button>
+        </nav>
+        <div className="nav-note"><span className="green-dot"></span> Secure checkout • Nationwide delivery</div>
+      </div>
+      {menu&&<div className="category-menu">{categories.slice(1).map(item=><button key={item} onClick={()=>{window.location.hash="#/category/" + encodeURIComponent(item);setMenu(false)}}>{item}<span>→</span></button>)}</div>}
+    </div>
+  </header>
+}
+
 export function Index(){
-const [category,setCategory]=useState("All"),[query,setQuery]=useState(""),[cart,setCart]=useState<number[]>([]),[checkoutOpen,setCheckoutOpen]=useState(false),[notice,setNotice]=useState("");
-const visible=useMemo(()=>products.filter(p=>(category==="All"||p.category===category)&&p.name.toLowerCase().includes(query.toLowerCase())),[category,query]);
-function add(p:Product){setCart(items=>[...items,p.id]);setNotice(`${p.name} added to your bag`);window.setTimeout(()=>setNotice(""),2200)}
-return <div className="market-shell">
-<div className="announcement"><strong>MAH-YAH MARKET</strong><span>•</span> Quality gadgets & electronics <span>•</span> Nationwide delivery</div>
-<header className="site-header"><a href="#top" className="brand"><span className="brand-mark">M</span><span>MAH-YAH <b>MARKET</b></span></a><nav className="desktop-nav"><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#deals">Deals</a><a href="#support">Support</a></nav><div className="header-actions"><button className="icon-button" aria-label="Search" onClick={()=>document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}><SearchIcon/></button><button className="bag-button" onClick={()=>setCheckoutOpen(true)}><BagIcon/><span>Cart</span>{cart.length>0&&<em>{cart.length}</em>}</button></div></header>
-<main id="top">
-<section className="hero wrap"><div className="hero-copy"><p className="eyebrow">Gadgets. Appliances. Everyday tech.</p><h1>Everything you need.<br/><i>One trusted market.</i></h1><p className="hero-text">Shop phones, computers, TVs, audio, appliances and accessories with clear Naira prices, straightforward delivery and a checkout designed for Nigeria.</p><div className="hero-search"><SearchIcon/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="What are you looking for?" aria-label="Search the marketplace"/></div><div className="hero-actions"><a className="cta-primary" href="#shop">Shop gadgets <span>↗</span></a><a className="cta-secondary" href="#categories">Browse categories</a></div><div className="hero-note"><span className="check">✓</span> Secure Paystack checkout <span className="dot">•</span> Nationwide delivery</div></div><div className="hero-visual"><div className="hero-panel"><div className="hero-panel-top"><span>FEATURED DEAL</span><strong>ITEL</strong></div><div className="hero-product"><ProductArt kind="washer"/></div><div className="hero-product-copy"><div><small>8KG FRONT LOAD</small><strong>Itel Washing Machine</strong></div><b>₦420,000</b></div></div><div className="deal-float"><span>7% OFF</span><strong>₦450,000 → ₦420,000</strong><small>Limited marketplace deal</small></div></div></section>
-<section className="trust-strip"><div><strong>Verified listings</strong><span>Shop with clearer product information</span></div><div><strong>Paystack checkout</strong><span>Familiar, secure online payments</span></div><div><strong>Nationwide delivery</strong><span>Delivery details confirmed at checkout</span></div></section>
-<section id="categories" className="wrap categories-section"><div className="section-head"><div><p className="eyebrow">Shop by category</p><h2>Find the right tech faster.</h2></div><p>From everyday accessories to major home appliances, browse the marketplace by what you actually need.</p></div><div className="category-grid">{categories.slice(1).map((item,i)=><button key={item} className={`category-tile tile-${i+1}`} onClick={()=>{setCategory(item);document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}}><span>0{i+1}</span><strong>{item}</strong><small>Shop now ↗</small></button>)}</div></section>
-<section id="deals" className="deal-section wrap"><div className="deal-copy"><p className="eyebrow">Featured deal</p><h2>Big appliance.<br/>Better price.</h2><p>The Itel 8KG Front Load Automatic Washing Machine is now listed at <strong>₦420,000</strong>, reduced from ₦450,000.</p><button className="cta-primary" onClick={()=>{setCategory("Appliances");document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}}>Shop appliance deals <span>↗</span></button></div><div className="deal-art"><ProductArt kind="washer"/><div className="deal-badge">7% OFF</div></div></section>
-<section id="shop" className="wrap shop-section"><div className="shop-top"><div><p className="eyebrow">The marketplace</p><h2>Popular gadgets & electronics.</h2></div><div className="search-wrap"><SearchIcon/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search products" aria-label="Search products"/></div></div><div className="filter-row">{categories.map(item=><button key={item} className={category===item?"filter active":"filter"} onClick={()=>setCategory(item)}>{item}</button>)}<span className="result-count">{visible.length} products</span></div><div className="product-grid">{visible.map(p=><article className="product-card" key={p.id}><div className="product-image"><ProductArt kind={p.art}/>{p.deal&&<span className="product-badge">{p.deal}</span>}{p.verified&&<span className="verified-badge">✓ Verified</span>}<button className="quick-add" onClick={()=>add(p)} aria-label={`Add ${p.name} to cart`}>+</button></div><div className="product-info"><div className="product-meta"><span>{p.category}</span><span>★ {p.rating}</span></div><h3>{p.name}</h3><div className="product-bottom"><div><strong>{naira(p.price)}</strong>{p.oldPrice&&<del>{naira(p.oldPrice)}</del>}</div><button onClick={()=>add(p)}>Add to cart</button></div></div></article>)}</div>{visible.length===0&&<div className="empty-state"><strong>No products found.</strong><span>Try another search or category.</span></div>}</section>
-<section id="support" className="support-section wrap"><div><p className="eyebrow">Built around the customer</p><h2>Clear products. Clear prices. Easy checkout.</h2><p>MAH-YAH MARKET is designed as a focused electronics storefront: customers can discover products, compare prices, see delivery/payment cues and move into a familiar Paystack checkout without unnecessary friction.</p></div><div className="support-grid"><div><span>01</span><strong>Product discovery</strong><p>Search, categories, deals and filters keep a large gadget catalogue easy to navigate.</p></div><div><span>02</span><strong>Payment ready</strong><p>Paystack is presented clearly as the primary online checkout option.</p></div><div><span>03</span><strong>WhatsApp support</strong><p>Customers can reach the store directly for product questions and purchase assistance.</p></div><div><span>04</span><strong>Delivery across Nigeria</strong><p>Delivery information is part of the buying journey rather than hidden after purchase.</p></div></div></section>
-<section className="final-cta wrap"><div><p className="eyebrow">MAH-YAH MARKET</p><h2>Shop smarter. Get the right gadget.</h2><p>A marketplace experience made for phones, electronics, appliances and everyday tech.</p></div><div className="final-actions"><a className="cta-primary light" href="#shop">Start shopping <span>↗</span></a><a className="whatsapp" href="https://wa.me/2349152122459" target="_blank" rel="noreferrer">Chat on WhatsApp</a></div></section>
-</main>
-<footer><div className="footer-main wrap"><div><a className="brand footer-brand" href="#top"><span className="brand-mark">M</span><span>MAH-YAH <b>MARKET</b></span></a><p>Gadgets, electronics and appliances with a clean marketplace experience built for Nigerian shoppers.</p></div><div className="footer-col"><strong>Shop</strong><a href="#shop">All products</a><a href="#categories">Categories</a><a href="#deals">Deals</a></div><div className="footer-col"><strong>Customer care</strong><a href="#support">Delivery</a><a href="#support">Payments</a><a href="https://wa.me/2349152122459">WhatsApp</a></div><div className="footer-col"><strong>Payment</strong><span className="paystack-pill">Paystack</span><small>Secure online checkout</small></div></div><div className="footer-bottom wrap"><span>© 2026 MAH-YAH MARKET</span><span>Gadgets • Electronics • Appliances</span></div></footer>
-{notice&&<div className="toast" role="status">✓ {notice}</div>}
-{checkoutOpen&&<div className="modal-backdrop" onClick={()=>setCheckoutOpen(false)}><div className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setCheckoutOpen(false)} aria-label="Close">×</button><p className="eyebrow">Your cart</p><h2 id="checkout-title">Ready for checkout.</h2>{cart.length===0?<p>Your cart is empty. Add a product to preview the checkout experience.</p>:<p>You have {cart.length} item{cart.length===1?"":"s"} in your cart.</p>}<div className="checkout-summary"><span>Payment</span><strong>Paystack</strong></div><button className="checkout-button" disabled={cart.length===0}>Continue to Paystack</button><small>This sample uses a preview checkout. Live payment credentials can be connected when the final store is ready.</small></div></div>}
-</div>}
+  const [route,setRoute] = useState<Route>(()=>readRoute());
+  const [cart,setCart] = useState<number[]>([]);
+  const [notice,setNotice] = useState("");
+  const selectedProduct = route.productId ? products.find(p=>p.id===route.productId) || null : null;
+
+  useEffect(()=>{
+    const handler=()=>{setRoute(readRoute());window.scrollTo({top:0,left:0,behavior:"instant" as ScrollBehavior});};
+    window.addEventListener("hashchange",handler);
+    return()=>window.removeEventListener("hashchange",handler);
+  },[]);
+
+  function go(path:string){window.location.hash="#/" + path}
+  function addToCart(product:Product, buyNow=false){
+    setCart(items=>[...items,product.id]);
+    setNotice(product.name + " added to cart");
+    window.setTimeout(()=>setNotice(""),2200);
+    if(buyNow) go("checkout");
+  }
+  function removeFromCart(index:number){setCart(items=>items.filter((_,i)=>i!==index))}
+  function categoryProducts(){
+    return products.filter(p=>{
+      const categoryMatch=route.category==="All" || route.category==="Deals" ? true : p.category===route.category;
+      const dealMatch=route.category==="Deals" ? Boolean(p.deal) : true;
+      const queryMatch=!route.query || p.name.toLowerCase().includes(route.query.toLowerCase());
+      return categoryMatch && dealMatch && queryMatch;
+    });
+  }
+  const listing = useMemo(()=>categoryProducts(),[route.category,route.query]);
+  const cartProducts = cart.map(id=>products.find(p=>p.id===id)).filter(Boolean) as Product[];
+  const cartTotal = cartProducts.reduce((sum,p)=>sum+p.price,0);
+
+  return <div className="store-shell">
+    <div className="announcement"><div><strong>Same-day delivery in Owerri</strong><span>•</span> Shop gadgets, appliances & electronics with confidence</div><button onClick={()=>go("support")}>Need help? Chat with us</button></div>
+    <Header cartCount={cart.length} onSearch={q=>go("search/" + encodeURIComponent(q))}/>
+
+    {route.view==="home"&&<Home onCategory={(c)=>go("category/" + encodeURIComponent(c))} onProduct={(p)=>go("product/" + p.id)} onAdd={addToCart} onDeals={()=>go("deals")}/>}
+    {route.view==="listing"&&<Listing title={route.category==="All" ? "Shop all gadgets" : route.category==="Deals" ? "Deals worth seeing" : route.category} subtitle={route.query ? "Search results for “" + route.query + "”" : "Browse this collection without leaving the shopping experience."} products={listing} onProduct={p=>go("product/" + p.id)} onAdd={addToCart} onCategory={c=>go("category/" + encodeURIComponent(c))}/>}
+    {route.view==="product"&&selectedProduct&&<ProductDetail product={selectedProduct} onBack={()=>go("category/" + encodeURIComponent(selectedProduct.category))} onAdd={addToCart} onBuy={p=>addToCart(p,true)} onProduct={p=>go("product/" + p.id)}/>}
+    {route.view==="cart"&&<Cart products={cartProducts} total={cartTotal} onRemove={removeFromCart} onShop={()=>go("")} onCheckout={()=>go("checkout")} onProduct={p=>go("product/" + p.id)}/>}
+    {route.view==="checkout"&&<Checkout products={cartProducts} total={cartTotal} onBack={()=>go("cart")} onShop={()=>go("")} />}
+    {route.view==="support"&&<Support onShop={()=>go("")} onWhatsApp={()=>window.open("https://wa.me/2349152122459","_blank")}/>}
+    {route.view==="home"&&<Footer onNav={go}/>}
+    {route.view!=="home"&&<Footer onNav={go}/>}
+    {notice&&<div className="toast" role="status"><span>✓</span>{notice}</div>}
+    <a className="whatsapp-float" href="https://wa.me/2349152122459" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">⌕</a>
+  </div>
+}
+
+function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;onProduct:(p:Product)=>void;onAdd:(p:Product)=>void;onDeals:()=>void}){
+  const featured=products.slice(0,4);
+  return <main className="page">
+    <section className="hero wrap">
+      <div className="hero-copy">
+        <span className="eyebrow blue">MAH-YAH • GADGETS & ELECTRONICS</span>
+        <h1>Shop smarter.<br/><em>Live easier.</em></h1>
+        <p>Phones, computers, TVs, audio, appliances and accessories in one clean marketplace built around clear prices and a simple Nigerian checkout.</p>
+        <div className="hero-buttons"><button className="primary-btn" onClick={()=>onCategory("All")}>Shop all products <Arrow/></button><button className="secondary-btn" onClick={onDeals}>See today's deals</button></div>
+        <div className="hero-trust"><span>✓ Paystack ready</span><span>✓ Nationwide delivery</span><span>✓ WhatsApp support</span></div>
+      </div>
+      <div className="hero-stage">
+        <div className="hero-stage-top"><span>FEATURED DEAL</span><b>7% OFF</b></div>
+        <button className="hero-product" onClick={()=>onProduct(products[0])}><ProductArt kind="washer"/><span className="hero-price">₦420,000</span></button>
+        <div className="hero-stage-bottom"><div><small>ITEL • APPLIANCES</small><strong>8KG Front Load Washing Machine</strong></div><button onClick={()=>onAdd(products[0])}>Add to cart +</button></div>
+      </div>
+    </section>
+
+    <section className="quick-cats wrap">
+      {["Phones & Tablets","Computers","TV & Audio","Appliances","Accessories"].map((item,i)=><button key={item} onClick={()=>onCategory(item)}><span className={"quick-icon q" + (i+1)}>{["▣","⌨","▤","◒","⌁"][i]}</span><strong>{item}</strong><small>Explore →</small></button>)}
+    </section>
+
+    <section className="trust-row">
+      <div><span className="trust-icon">✓</span><div><strong>Verified product information</strong><small>Prices and key details stay easy to find.</small></div></div>
+      <div><span className="trust-icon">₦</span><div><strong>Paystack checkout</strong><small>Familiar online payment flow for Nigeria.</small></div></div>
+      <div><span className="trust-icon">↗</span><div><strong>Delivery visibility</strong><small>Delivery is part of the buying journey.</small></div></div>
+    </section>
+
+    <section className="section wrap">
+      <div className="section-heading"><div><span className="eyebrow">Popular now</span><h2>Products customers can discover in seconds.</h2></div><button className="text-link" onClick={()=>onCategory("All")}>View all products →</button></div>
+      <div className="product-grid home-products">{featured.map(p=><ProductCard key={p.id} product={p} onDetails={onProduct} onAdd={onAdd}/>)}</div>
+    </section>
+
+    <section className="feature-band wrap">
+      <div className="feature-copy"><span className="eyebrow">MAH-YAH difference</span><h2>A storefront that feels organised — not crowded.</h2><p>Each click can open the right shopping screen: collection, product details, cart or checkout. Customers don't have to hunt through one long page to complete a purchase.</p><button className="primary-btn" onClick={()=>onCategory("Appliances")}>Explore appliances <Arrow/></button></div>
+      <div className="feature-list"><div><span>01</span><strong>Collection screens</strong><small>Tap a category and get a focused catalogue.</small></div><div><span>02</span><strong>Product detail screens</strong><small>See pricing, delivery cues and purchase actions together.</small></div><div><span>03</span><strong>Checkout screen</strong><small>Delivery details and Paystack are separated cleanly from browsing.</small></div></div>
+    </section>
+
+    <section className="section wrap">
+      <div className="section-heading"><div><span className="eyebrow">Featured categories</span><h2>Start with what you need.</h2></div></div>
+      <div className="category-showcase">{categories.slice(1).map((item,i)=><button key={item} onClick={()=>onCategory(item)}><span className={"cat-art c"+(i+1)}>{["PHONE","PC","TV","HOME","TECH"][i]}</span><div><strong>{item}</strong><small>Open collection →</small></div></button>)}</div>
+    </section>
+
+    <section className="blue-cta wrap"><div><span className="eyebrow light-eyebrow">Ready when you are</span><h2>Find the gadget that fits your day.</h2><p>Browse the marketplace, compare the options and move into checkout without unnecessary steps.</p></div><div className="blue-cta-actions"><button className="white-btn" onClick={()=>onCategory("All")}>Start shopping <Arrow/></button><button className="ghost-white" onClick={onDeals}>See deals</button></div></section>
+  </main>
+}
+
+function Listing({title,subtitle,products,onProduct,onAdd,onCategory}:{title:string;subtitle:string;products:Product[];onProduct:(p:Product)=>void;onAdd:(p:Product)=>void;onCategory:(c:string)=>void}){
+  const [sort,setSort]=useState("featured");
+  const sorted=useMemo(()=>{
+    const copy=[...products];
+    if(sort==="low") copy.sort((a,b)=>a.price-b.price);
+    if(sort==="high") copy.sort((a,b)=>b.price-a.price);
+    if(sort==="rating") copy.sort((a,b)=>Number(b.rating)-Number(a.rating));
+    return copy;
+  },[products,sort]);
+  return <main className="page"><section className="listing-hero wrap"><div className="breadcrumbs"><button onClick={()=>onCategory("All")}>Home</button><span>/</span><span>{title}</span></div><span className="eyebrow blue">SHOP COLLECTION</span><h1>{title}</h1><p>{subtitle}</p></section>
+    <section className="listing-content wrap">
+      <aside className="listing-sidebar"><strong>Browse categories</strong>{categories.map(c=><button key={c} onClick={()=>onCategory(c)} className={title===c || (title==="Shop all gadgets"&&c==="All") ? "side-active":""}>{c}<span>→</span></button>)}<div className="sidebar-help"><span>Need help?</span><strong>Chat with MAH-YAH</strong><small>WhatsApp support is one click away.</small><a href="https://wa.me/2349152122459">Open WhatsApp →</a></div></aside>
+      <div className="listing-main"><div className="listing-toolbar"><span><strong>{sorted.length}</strong> products</span><label>Sort <select value={sort} onChange={e=>setSort(e.target.value)}><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rating">Top rated</option></select></label></div>{sorted.length ? <div className="product-grid">{sorted.map(p=><ProductCard key={p.id} product={p} onDetails={onProduct} onAdd={onAdd}/>)}</div> : <div className="empty-state"><strong>No matching products yet.</strong><p>Try another category or search term.</p><button className="primary-btn" onClick={()=>onCategory("All")}>View all products</button></div>}</div>
+    </section>
+  </main>
+}
+
+function ProductDetail({product,onBack,onAdd,onBuy,onProduct}:{product:Product;onBack:()=>void;onAdd:(p:Product)=>void;onBuy:(p:Product)=>void;onProduct:(p:Product)=>void}){
+  const related=products.filter(p=>p.category===product.category&&p.id!==product.id).slice(0,3);
+  const [quantity,setQuantity]=useState(1);
+  return <main className="page"><section className="product-page wrap">
+    <div className="breadcrumbs"><button onClick={onBack}>← Back to collection</button><span>/</span><span>{product.category}</span><span>/</span><strong>{product.name}</strong></div>
+    <div className="product-detail"><div className="detail-media"><ProductArt kind={product.art}/>{product.deal&&<span className="detail-badge">{product.deal}</span>}</div><div className="detail-copy"><span className="eyebrow blue">{product.category}</span><h1>{product.name}</h1><div className="rating-row"><span>★ {product.rating}</span><span>•</span><span>✓ Verified listing</span></div><div className="price-block"><strong>{naira(product.price)}</strong>{product.oldPrice&&<del>{naira(product.oldPrice)}</del>}</div><p className="detail-description">{product.description}</p><div className="delivery-card"><span>▣</span><div><strong>Delivery information</strong><small>Delivery options and final charges can be confirmed during checkout.</small></div></div><div className="quantity-row"><span>Quantity</span><div><button onClick={()=>setQuantity(Math.max(1,quantity-1))}>−</button><strong>{quantity}</strong><button onClick={()=>setQuantity(quantity+1)}>+</button></div></div><div className="detail-actions"><button className="secondary-btn" onClick={()=>{for(let i=0;i<quantity;i++)onAdd(product)}}>Add to cart</button><button className="primary-btn" onClick={()=>onBuy(product)}>Buy now <Arrow/></button></div><div className="secure-line"><span>✓</span> Secure checkout</div></div></div>
+  </section><section className="section wrap"><div className="section-heading"><div><span className="eyebrow">You may also like</span><h2>More from {product.category}.</h2></div></div><div className="product-grid">{related.map(p=><ProductCard key={p.id} product={p} onDetails={onProduct} onAdd={onAdd}/>)}</div></section></main>
+}
+
+function Cart({products,total,onRemove,onShop,onCheckout,onProduct}:{products:Product[];total:number;onRemove:(index:number)=>void;onShop:()=>void;onCheckout:()=>void;onProduct:(p:Product)=>void}){
+  return <main className="page"><section className="listing-hero wrap"><div className="breadcrumbs"><button onClick={onShop}>Home</button><span>/</span><span>Cart</span></div><span className="eyebrow blue">YOUR SHOPPING BAG</span><h1>Your cart.</h1><p>Review your selected products before moving to delivery and payment.</p></section><section className="cart-layout wrap">
+    <div className="cart-list">{products.length ? products.map((p,i)=><article className="cart-item" key={i}><button className="cart-thumb" onClick={()=>onProduct(p)}><ProductArt kind={p.art}/></button><div className="cart-item-copy"><span>{p.category}</span><button onClick={()=>onProduct(p)}>{p.name}</button><strong>{naira(p.price)}</strong></div><button className="remove-btn" onClick={()=>onRemove(i)}>Remove</button></article>) : <div className="empty-state large"><strong>Your cart is empty.</strong><p>Choose a product and it will appear here.</p><button className="primary-btn" onClick={onShop}>Continue shopping</button></div>}</div>
+    <aside className="order-summary"><span className="eyebrow">Order summary</span><h2>Checkout total</h2><div className="summary-line"><span>Items</span><strong>{products.length}</strong></div><div className="summary-line"><span>Subtotal</span><strong>{naira(total)}</strong></div><div className="summary-line"><span>Delivery</span><span>Calculated at checkout</span></div><div className="summary-total"><span>Total</span><strong>{naira(total)}</strong></div><button className="primary-btn full" disabled={!products.length} onClick={onCheckout}>Proceed to checkout <Arrow/></button><small>Paystack is shown as the intended online payment gateway for the sample.</small></aside>
+  </section></main>
+}
+
+function Checkout({products,total,onBack,onShop}:{products:Product[];total:number;onBack:()=>void;onShop:()=>void}){
+  const [submitted,setSubmitted]=useState(false);
+  return <main className="page"><section className="checkout-head wrap"><div className="breadcrumbs"><button onClick={onBack}>← Back to cart</button><span>/</span><span>Checkout</span></div><span className="eyebrow blue">SAFE & SIMPLE CHECKOUT</span><h1>Delivery details.</h1><p>Keep customer information clear and separate from the browsing experience.</p></section><section className="checkout-layout wrap">
+    <form className="checkout-form" onSubmit={e=>{e.preventDefault();setSubmitted(true)}}><div className="form-card"><h2>Contact information</h2><div className="form-grid"><label>Full name<input required placeholder="Customer name"/></label><label>Phone number<input required placeholder="0800 000 0000"/></label><label className="wide">Email address<input type="email" placeholder="name@example.com"/></label></div></div><div className="form-card"><h2>Delivery address</h2><div className="form-grid"><label className="wide">Street address<input required placeholder="House number, street and area"/></label><label>City<input required placeholder="Owerri"/></label><label>State<input required placeholder="Imo"/></label><label className="wide">Note for merchant<textarea placeholder="Anything the store should know?"></textarea></label></div></div><div className="payment-card"><div><span className="paystack-logo">P</span><div><strong>Paystack</strong><small>Online payment gateway</small></div></div><span>✓ Secure</span></div>{submitted&&<div className="demo-notice">Checkout preview submitted. In a production version, this button would pass the order to the connected Paystack checkout.</div>}<button className="primary-btn full" type="submit" disabled={!products.length}>Continue to Paystack <Arrow/></button><small className="form-note">This sample intentionally uses a preview flow; live payment credentials can be connected for the final store.</small></form>
+    <aside className="checkout-summary-card"><span className="eyebrow">Your order</span>{products.length ? products.map((p,i)=><div className="mini-item" key={i}><div><strong>{p.name}</strong><small>{p.category}</small></div><span>{naira(p.price)}</span></div>) : <div className="empty-order"><strong>No items yet.</strong><button onClick={onShop}>Return to shop</button></div>}<div className="summary-total"><span>Total</span><strong>{naira(total)}</strong></div><div className="checkout-note">Delivery options and final shipping cost are confirmed before payment.</div></aside>
+  </section></main>
+}
+
+function Support({onShop,onWhatsApp}:{onShop:()=>void;onWhatsApp:()=>void}){
+  return <main className="page"><section className="support-hero wrap"><div><span className="eyebrow blue">CUSTOMER CARE</span><h1>Need help choosing the right gadget?</h1><p>Support should feel like part of the store, not an afterthought. This screen gives customers one clear place to ask questions before purchase.</p><div className="hero-buttons"><button className="primary-btn" onClick={onWhatsApp}>Chat on WhatsApp <Arrow/></button><button className="secondary-btn" onClick={onShop}>Back to shop</button></div></div><div className="support-card"><div><span>01</span><strong>Product questions</strong><small>Ask about a product before you buy.</small></div><div><span>02</span><strong>Delivery questions</strong><small>Confirm delivery details for your location.</small></div><div><span>03</span><strong>Payment help</strong><small>Get help with the checkout flow.</small></div></div></section><section className="section wrap support-faq"><div><span className="eyebrow">Designed for clarity</span><h2>Helpful information without the clutter.</h2></div><div className="faq-grid"><article><strong>How do I choose a product?</strong><p>Open a category, compare product cards, then open the dedicated product screen for the full purchase view.</p></article><article><strong>Can I ask before ordering?</strong><p>Yes. The WhatsApp support action remains visible so customers can contact the store before payment.</p></article><article><strong>Where does payment happen?</strong><p>The checkout screen is kept separate from browsing, with Paystack clearly presented as the intended online gateway.</p></article><article><strong>How does delivery work?</strong><p>The store can confirm the exact delivery option and charge during checkout rather than burying it on the product page.</p></article></div></section></main>
+}
+
+function Footer({onNav}:{onNav:(path:string)=>void}){
+  return <footer><div className="footer-main wrap"><div className="footer-brand-block"><button className="brand-button" onClick={()=>onNav("")}><Brand/></button><p>Gadgets, electronics and appliances presented in a cleaner, easier-to-navigate marketplace experience.</p></div><div><strong>Shop</strong><button onClick={()=>onNav("")}>All products</button><button onClick={()=>onNav("deals")}>Deals</button><button onClick={()=>onNav("category/" + encodeURIComponent("Appliances"))}>Appliances</button></div><div><strong>Customer care</strong><button onClick={()=>onNav("support")}>Support</button><a href="https://wa.me/2349152122459">WhatsApp</a><button onClick={()=>onNav("checkout")}>Checkout</button></div><div><strong>Payment</strong><span className="paystack-pill">Paystack</span><small>Online checkout gateway</small></div></div><div className="footer-bottom wrap"><span>© 2026 MAH-YAH</span><span>Gadgets • Electronics • Appliances</span></div></footer>
+}
