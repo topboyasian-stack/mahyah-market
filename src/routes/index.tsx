@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 
 type Product = {
   id:number;
@@ -95,7 +96,7 @@ function ProductCard({product,onDetails,onAdd}:{product:Product;onDetails:(p:Pro
 function Header({cartCount,onSearch}:{cartCount:number;onSearch:(q:string)=>void}){
   const [search,setSearch] = useState("");
   const [menu,setMenu] = useState(false);
-  const submit = (e:React.FormEvent) => {e.preventDefault(); if(search.trim()) onSearch(search.trim());};
+  const submit = (e:FormEvent) => {e.preventDefault(); if(search.trim()) onSearch(search.trim());};
   return <header className="site-header">
     <div className="header-inner">
       <button className="brand-button" onClick={()=>window.location.hash="#/"}><Brand/></button>
