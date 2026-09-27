@@ -1,9 +1,22 @@
 {
-  "name":"mahyah-market",
-  "private":true,
-  "version":"1.0.0",
-  "type":"module",
-  "scripts":{"build":"vite build","dev":"vite","preview":"vite preview"},
-  "dependencies":{"react":"^19.2.0","react-dom":"^19.2.0"},
-  "devDependencies":{"@types/react":"19.2.15","@types/react-dom":"^19.2.0","@vitejs/plugin-react":"^5.0.4","typescript":"^5.8.3","vite":"^7.3.1"}
+  "name": "mahyah-market",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "typescript": "^5.8.3",
+    "vite": "^7.3.1"
+  }
 }
