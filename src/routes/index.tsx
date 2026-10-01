@@ -231,10 +231,10 @@ function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;
     </section>
 
     <section className="promo-code-panel wrap">
-      <div><span className="eyebrow">COUPONS & PROMO CODES</span><h2>Have a code?</h2><p>Customers can enter a coupon or promotional code before checkout. The final active codes and rules can be managed from the store.</p></div>
+      <div className="promo-code-copy"><span className="eyebrow">COUPONS & PROMO CODES</span><h2>Have a code?</h2><p>Enter a coupon before checkout and keep active campaign codes visible without crowding the product experience.</p></div>
       <form onSubmit={applyCoupon} className="promo-code-form">
-        <label htmlFor="mahyah-coupon">Coupon / promo code</label>
-        <div><input id="mahyah-coupon" value={coupon} onChange={e=>setCoupon(e.target.value)} placeholder="e.g. MAHYAH5" autoComplete="off"/><button type="submit">Apply code</button></div>
+        <label htmlFor="mahyah-coupon">Enter promo code</label>
+        <div><input id="mahyah-coupon" value={coupon} onChange={e=>setCoupon(e.target.value)} placeholder="MAHYAH5" autoComplete="off"/><button type="submit">Apply</button></div>
         <small>{couponNotice || "Sample code: MAHYAH5 · 5% off selected promo items"}</small>
       </form>
     </section>
