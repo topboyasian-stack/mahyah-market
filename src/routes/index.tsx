@@ -173,6 +173,10 @@ export function Index(){
 
 function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;onProduct:(p:Product)=>void;onAdd:(p:Product)=>void;onDeals:()=>void}){
   const featured=products.slice(0,4);
+  const promoProducts=products.filter(p=>p.deal);
+  const [promoIndex,setPromoIndex]=useState(0);
+  const [coupon,setCoupon]=useState("");
+  const [couponNotice,setCouponNotice]=useState("");
   const categoryCards=[
     {name:"Phones & Tablets",label:"PHONES",kind:"phone"},
     {name:"Computers",label:"COMPUTING",kind:"keyboard"},
@@ -180,6 +184,21 @@ function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;
     {name:"Appliances",label:"HOME",kind:"washer"},
     {name:"Accessories",label:"ACCESSORIES",kind:"power"}
   ];
+  const activePromo=promoProducts[promoIndex] || products[0];
+
+  useEffect(()=>{
+    if(promoProducts.length<2) return;
+    const timer=window.setInterval(()=>setPromoIndex(i=>(i+1)%promoProducts.length),4500);
+    return()=>window.clearInterval(timer);
+  },[promoProducts.length]);
+
+  function applyCoupon(e:FormEvent){
+    e.preventDefault();
+    const code=coupon.trim().toUpperCase();
+    if(!code){setCouponNotice("Enter a coupon or promo code.");return;}
+    setCouponNotice(code==="MAHYAH5" ? "Sample code accepted — 5% off selected promo items." : "Code saved for the sample checkout. Final codes can be managed by MAH-YAH.");
+  }
+
   return <main className="page mahyah-home">
     <section className="graphic-hero wrap">
       <div className="graphic-copy">
@@ -189,13 +208,35 @@ function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;
         <div className="hero-buttons"><button className="primary-btn" onClick={()=>onCategory("All")}>Start shopping <Arrow/></button><button className="secondary-btn" onClick={onDeals}>See deals</button></div>
         <div className="graphic-trust"><span>✓ Paystack ready</span><span>✓ Delivery across Nigeria</span><span>✓ WhatsApp support</span></div>
       </div>
-      <div className="graphic-collage" aria-label="Featured MAH-YAH products">
-        <div className="collage-orb orb-one"></div><div className="collage-orb orb-two"></div>
-        <div className="collage-label"><small>MAH-YAH</small><strong>TECH + HOME</strong></div>
-        <button className="collage-card collage-main" onClick={()=>onProduct(products[0])}><ProductArt kind="washer"/><div><span>FEATURED DEAL · 7% OFF</span><strong>Itel 8KG Washing Machine</strong><b>₦420,000</b></div></button>
-        <button className="collage-card collage-phone" onClick={()=>onProduct(products[5])}><ProductArt kind="phone"/><span>ANDROID · 128GB</span></button>
-        <button className="collage-card collage-power" onClick={()=>onProduct(products[4])}><ProductArt kind="power"/><span>20,000mAh · FAST CHARGE</span></button>
+
+      <div className="promo-billboard" aria-label="MAH-YAH current promotions">
+        <div className="billboard-top"><div><span>MAH-YAH PROMO BILLBOARD</span><strong>Current offers</strong></div><small>SWAPS AUTOMATICALLY</small></div>
+        <button className="promo-slide" onClick={()=>onProduct(activePromo)}>
+          <div className="promo-art"><ProductArt kind={activePromo.art}/></div>
+          <div className="promo-copy">
+            <span className="promo-kicker">{activePromo.deal} · LIMITED PROMO</span>
+            <small>{activePromo.category}</small>
+            <h2>{activePromo.name}</h2>
+            <p>{activePromo.description}</p>
+            <div className="promo-price"><strong>{naira(activePromo.price)}</strong>{activePromo.oldPrice&&<del>{naira(activePromo.oldPrice)}</del>}</div>
+            <span className="promo-cta">Shop this promo <Arrow/></span>
+          </div>
+        </button>
+        <div className="billboard-controls">
+          <button aria-label="Previous promotion" onClick={(e)=>{e.stopPropagation();setPromoIndex(i=>(i-1+promoProducts.length)%promoProducts.length)}}>←</button>
+          <div className="promo-dots">{promoProducts.map((p,i)=><button key={p.id} aria-label={"Show promotion "+(i+1)} className={i===promoIndex?"active":""} onClick={(e)=>{e.stopPropagation();setPromoIndex(i)}}></button>)}</div>
+          <button aria-label="Next promotion" onClick={(e)=>{e.stopPropagation();setPromoIndex(i=>(i+1)%promoProducts.length)}}>→</button>
+        </div>
       </div>
+    </section>
+
+    <section className="promo-code-panel wrap">
+      <div><span className="eyebrow">COUPONS & PROMO CODES</span><h2>Have a code?</h2><p>Customers can enter a coupon or promotional code before checkout. The final active codes and rules can be managed from the store.</p></div>
+      <form onSubmit={applyCoupon} className="promo-code-form">
+        <label htmlFor="mahyah-coupon">Coupon / promo code</label>
+        <div><input id="mahyah-coupon" value={coupon} onChange={e=>setCoupon(e.target.value)} placeholder="e.g. MAHYAH5" autoComplete="off"/><button type="submit">Apply code</button></div>
+        <small>{couponNotice || "Sample code: MAHYAH5 · 5% off selected promo items"}</small>
+      </form>
     </section>
 
     <section className="mobile-category-strip wrap">
