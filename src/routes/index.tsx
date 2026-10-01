@@ -173,51 +173,55 @@ export function Index(){
 
 function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;onProduct:(p:Product)=>void;onAdd:(p:Product)=>void;onDeals:()=>void}){
   const featured=products.slice(0,4);
-  return <main className="page">
-    <section className="hero wrap">
-      <div className="hero-copy">
-        <span className="eyebrow blue">MAH-YAH • GADGETS & ELECTRONICS</span>
-        <h1>Shop smarter.<br/><em>Live easier.</em></h1>
-        <p>Phones, computers, TVs, audio, appliances and accessories in one clean marketplace built around clear prices and a simple Nigerian checkout.</p>
-        <div className="hero-buttons"><button className="primary-btn" onClick={()=>onCategory("All")}>Shop all products <Arrow/></button><button className="secondary-btn" onClick={onDeals}>See today's deals</button></div>
-        <div className="hero-trust"><span>✓ Paystack ready</span><span>✓ Nationwide delivery</span><span>✓ WhatsApp support</span></div>
+  const categoryCards=[
+    {name:"Phones & Tablets",label:"PHONES",kind:"phone"},
+    {name:"Computers",label:"COMPUTING",kind:"keyboard"},
+    {name:"TV & Audio",label:"ENTERTAINMENT",kind:"tv"},
+    {name:"Appliances",label:"HOME",kind:"washer"},
+    {name:"Accessories",label:"ACCESSORIES",kind:"power"}
+  ];
+  return <main className="page mahyah-home">
+    <section className="graphic-hero wrap">
+      <div className="graphic-copy">
+        <span className="eyebrow blue">MAH-YAH MARKET · GADGETS FOR EVERYDAY LIFE</span>
+        <h1>Your tech.<br/><span>Your home.</span><br/>Your way.</h1>
+        <p>Phones, computers, entertainment, appliances and everyday tech — curated into one fast, mobile-friendly shopping experience.</p>
+        <div className="hero-buttons"><button className="primary-btn" onClick={()=>onCategory("All")}>Start shopping <Arrow/></button><button className="secondary-btn" onClick={onDeals}>See deals</button></div>
+        <div className="graphic-trust"><span>✓ Paystack ready</span><span>✓ Delivery across Nigeria</span><span>✓ WhatsApp support</span></div>
       </div>
-      <div className="hero-stage">
-        <div className="hero-stage-top"><span>FEATURED DEAL</span><b>7% OFF</b></div>
-        <button className="hero-product" onClick={()=>onProduct(products[0])}><ProductArt kind="washer"/><span className="hero-price">₦420,000</span></button>
-        <div className="hero-stage-bottom"><div><small>ITEL • APPLIANCES</small><strong>8KG Front Load Washing Machine</strong></div><button onClick={()=>onAdd(products[0])}>Add to cart +</button></div>
+      <div className="graphic-collage" aria-label="Featured MAH-YAH products">
+        <div className="collage-orb orb-one"></div><div className="collage-orb orb-two"></div>
+        <div className="collage-label"><small>MAH-YAH</small><strong>TECH + HOME</strong></div>
+        <button className="collage-card collage-main" onClick={()=>onProduct(products[0])}><ProductArt kind="washer"/><div><span>FEATURED DEAL · 7% OFF</span><strong>Itel 8KG Washing Machine</strong><b>₦420,000</b></div></button>
+        <button className="collage-card collage-phone" onClick={()=>onProduct(products[5])}><ProductArt kind="phone"/><span>ANDROID · 128GB</span></button>
+        <button className="collage-card collage-power" onClick={()=>onProduct(products[4])}><ProductArt kind="power"/><span>20,000mAh · FAST CHARGE</span></button>
       </div>
     </section>
 
-    <section className="quick-cats wrap">
-      {["Phones & Tablets","Computers","TV & Audio","Appliances","Accessories"].map((item,i)=><button key={item} onClick={()=>onCategory(item)}><span className={"quick-icon q" + (i+1)}>{["▣","⌨","▤","◒","⌁"][i]}</span><strong>{item}</strong><small>Explore →</small></button>)}
+    <section className="mobile-category-strip wrap">
+      <div className="strip-heading"><div><span className="eyebrow">SHOP BY CATEGORY</span><h2>Pick a lane.</h2></div><button onClick={()=>onCategory("All")}>All products →</button></div>
+      <div className="graphic-category-grid">{categoryCards.map((item,i)=><button key={item.name} className={"graphic-category gc-"+(i+1)} onClick={()=>onCategory(item.name)}>
+        <div className="category-mini-art"><ProductArt kind={item.kind}/></div><div className="category-label"><small>{item.label}</small><strong>{item.name}</strong><span>Shop now ↗</span></div>
+      </button>)}</div>
     </section>
 
-    <section className="trust-row">
-      <div><span className="trust-icon">✓</span><div><strong>Verified product information</strong><small>Prices and key details stay easy to find.</small></div></div>
-      <div><span className="trust-icon">₦</span><div><strong>Paystack checkout</strong><small>Familiar online payment flow for Nigeria.</small></div></div>
-      <div><span className="trust-icon">↗</span><div><strong>Delivery visibility</strong><small>Delivery is part of the buying journey.</small></div></div>
+    <section className="mobile-trust wrap">
+      <div><b>01</b><strong>Clear prices</strong><small>No hunting through the page for the important details.</small></div>
+      <div><b>02</b><strong>Simple checkout</strong><small>Browse first, then move cleanly into delivery and Paystack.</small></div>
+      <div><b>03</b><strong>Human support</strong><small>WhatsApp stays one tap away when you need help.</small></div>
     </section>
 
-    <section className="section wrap">
-      <div className="section-heading"><div><span className="eyebrow">Popular now</span><h2>Products customers can discover in seconds.</h2></div><button className="text-link" onClick={()=>onCategory("All")}>View all products →</button></div>
+    <section className="section wrap graphic-products">
+      <div className="section-heading"><div><span className="eyebrow">TRENDING NOW</span><h2>Good tech, without the clutter.</h2></div><button className="text-link" onClick={()=>onCategory("All")}>View all →</button></div>
       <div className="product-grid home-products">{featured.map(p=><ProductCard key={p.id} product={p} onDetails={onProduct} onAdd={onAdd}/>)}</div>
     </section>
 
-    <section className="feature-band wrap">
-      <div className="feature-copy"><span className="eyebrow">MAH-YAH difference</span><h2>A storefront that feels organised — not crowded.</h2><p>Each click can open the right shopping screen: collection, product details, cart or checkout. Customers don't have to hunt through one long page to complete a purchase.</p><button className="primary-btn" onClick={()=>onCategory("Appliances")}>Explore appliances <Arrow/></button></div>
-      <div className="feature-list"><div><span>01</span><strong>Collection screens</strong><small>Tap a category and get a focused catalogue.</small></div><div><span>02</span><strong>Product detail screens</strong><small>See pricing, delivery cues and purchase actions together.</small></div><div><span>03</span><strong>Checkout screen</strong><small>Delivery details and Paystack are separated cleanly from browsing.</small></div></div>
+    <section className="editorial-panel wrap">
+      <div><span className="eyebrow">THE MAH-YAH FEEL</span><h2>A shopping experience designed for the phone in your hand.</h2><p>Large product visuals, short paths and obvious actions make the sample feel closer to a modern shopping app than a long traditional storefront.</p></div>
+      <div className="editorial-actions"><button className="primary-btn" onClick={()=>onCategory("Appliances")}>Explore appliances <Arrow/></button><button className="secondary-btn" onClick={()=>onDeals}>Browse deals</button></div>
     </section>
-
-    <section className="section wrap">
-      <div className="section-heading"><div><span className="eyebrow">Featured categories</span><h2>Start with what you need.</h2></div></div>
-      <div className="category-showcase">{categories.slice(1).map((item,i)=><button key={item} onClick={()=>onCategory(item)}><span className={"cat-art c"+(i+1)}>{["PHONE","PC","TV","HOME","TECH"][i]}</span><div><strong>{item}</strong><small>Open collection →</small></div></button>)}</div>
-    </section>
-
-    <section className="blue-cta wrap"><div><span className="eyebrow light-eyebrow">Ready when you are</span><h2>Find the gadget that fits your day.</h2><p>Browse the marketplace, compare the options and move into checkout without unnecessary steps.</p></div><div className="blue-cta-actions"><button className="white-btn" onClick={()=>onCategory("All")}>Start shopping <Arrow/></button><button className="ghost-white" onClick={onDeals}>See deals</button></div></section>
   </main>
 }
-
 function Listing({title,subtitle,products,onProduct,onAdd,onCategory}:{title:string;subtitle:string;products:Product[];onProduct:(p:Product)=>void;onAdd:(p:Product)=>void;onCategory:(c:string)=>void}){
   const [sort,setSort]=useState("featured");
   const sorted=useMemo(()=>{
