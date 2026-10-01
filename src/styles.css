@@ -243,42 +243,52 @@ footer{border-top:1px solid var(--line);background:#fff;padding-top:48px}.footer
 }
 
 
-/* Promo billboard + coupon/promo code area */
-.promo-billboard{min-height:535px;border-radius:32px;background:linear-gradient(135deg,#061A34 0%,#0B63E5 58%,#61B7FF 100%);position:relative;overflow:hidden;padding:22px;box-shadow:0 30px 80px rgba(8,56,126,.25);color:#fff}
-.promo-billboard:before{content:"";position:absolute;inset:14px;border:1px solid rgba(255,255,255,.2);border-radius:24px;pointer-events:none}
-.promo-billboard:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-80px;top:-80px;background:rgba(255,255,255,.12)}
-.billboard-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:start;gap:15px;padding:2px 5px 14px}
-.billboard-top span{display:block;font-size:7px;letter-spacing:.18em;color:#B9D8FF;font-weight:900}
-.billboard-top strong{display:block;font-size:18px;margin-top:4px}
-.billboard-top small{font-size:7px;letter-spacing:.12em;color:#D9E9FF;font-weight:900;padding-top:4px}
-.promo-slide{position:relative;z-index:2;width:100%;border:0;background:#fff;border-radius:22px;padding:0;overflow:hidden;text-align:left;display:grid;grid-template-columns:1.02fr .98fr;box-shadow:0 25px 60px rgba(0,0,0,.24);cursor:pointer}
-.promo-art{background:#EDF5FF;min-height:380px;display:flex;align-items:center;justify-content:center}
+/* Professional billboard + promotion placement */
+.graphic-hero{grid-template-columns:minmax(330px,.78fr) minmax(0,1.22fr);gap:42px;align-items:center}
+.promo-billboard{min-height:0;aspect-ratio:16 / 10;border-radius:26px;background:linear-gradient(135deg,#061A34 0%,#0B63E5 58%,#61B7FF 100%);position:relative;overflow:hidden;padding:18px;box-shadow:0 24px 60px rgba(8,56,126,.2);color:#fff}
+.promo-billboard:before{content:"";position:absolute;inset:11px;border:1px solid rgba(255,255,255,.2);border-radius:19px;pointer-events:none}
+.promo-billboard:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-70px;top:-70px;background:rgba(255,255,255,.1)}
+.billboard-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:start;gap:15px;padding:0 3px 10px}
+.billboard-top span{display:block;font-size:6px;letter-spacing:.18em;color:#B9D8FF;font-weight:900}
+.billboard-top strong{display:block;font-size:15px;margin-top:3px}
+.billboard-top small{font-size:6px;letter-spacing:.12em;color:#D9E9FF;font-weight:900;padding-top:3px}
+.promo-slide{position:relative;z-index:2;width:100%;height:calc(100% - 53px);min-height:0;border:0;background:#fff;border-radius:18px;padding:0;overflow:hidden;text-align:left;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 18px 42px rgba(0,0,0,.2);cursor:pointer}
+.promo-art{background:#EDF5FF;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .promo-art .product-art{width:100%;height:100%;object-fit:cover}
-.promo-copy{padding:28px 25px;display:flex;flex-direction:column;justify-content:center;color:var(--ink)}
-.promo-kicker{display:inline-block;color:var(--blue);font-size:8px;font-weight:950;letter-spacing:.1em}
-.promo-copy>small{color:#7D8DA0;font-size:8px;text-transform:uppercase;letter-spacing:.12em;margin-top:13px}
-.promo-copy h2{font-size:clamp(24px,3vw,38px);line-height:1.04;letter-spacing:-.045em;margin:8px 0 10px;color:var(--blue-deep)}
-.promo-copy p{font-size:10px;line-height:1.55;color:#738399;margin:0 0 16px}
-.promo-price{display:flex;align-items:baseline;gap:10px}.promo-price strong{font-size:23px;color:var(--green)}.promo-price del{font-size:10px;color:#8B98AA}
-.promo-cta{display:inline-flex;align-items:center;gap:7px;color:var(--blue);font-size:9px;font-weight:900;margin-top:18px}
-.billboard-controls{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:16px;padding-top:14px}
-.billboard-controls>button{width:28px;height:28px;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:12px}
-.promo-dots{display:flex;gap:6px}.promo-dots button{width:6px;height:6px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.4)}.promo-dots button.active{width:20px;border-radius:8px;background:#fff}
+.promo-copy{padding:22px 21px;display:flex;flex-direction:column;justify-content:center;color:var(--ink);min-width:0}
+.promo-kicker{display:inline-block;color:var(--blue);font-size:7px;font-weight:950;letter-spacing:.1em}
+.promo-copy>small{color:#7D8DA0;font-size:7px;text-transform:uppercase;letter-spacing:.12em;margin-top:10px}
+.promo-copy h2{font-size:clamp(21px,2.5vw,32px);line-height:1.05;letter-spacing:-.045em;margin:7px 0 8px;color:var(--blue-deep)}
+.promo-copy p{font-size:9px;line-height:1.5;color:#738399;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.promo-price{display:flex;align-items:baseline;gap:8px}.promo-price strong{font-size:20px;color:var(--green)}.promo-price del{font-size:9px;color:#8B98AA}
+.promo-cta{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:8px;font-weight:900;margin-top:13px}
+.billboard-controls{position:absolute;left:0;right:0;bottom:12px;z-index:4;display:flex;align-items:center;justify-content:center;gap:13px}
+.billboard-controls>button{width:26px;height:26px;border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:11px}
+.promo-dots{display:flex;gap:5px}.promo-dots button{width:5px;height:5px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.4)}.promo-dots button.active{width:17px;border-radius:8px;background:#fff}
 
-.promo-code-panel{margin-top:20px;border:1px solid #D4E3F3;border-radius:22px;background:linear-gradient(105deg,#F4F9FF,#fff 58%,#F1FBF5);padding:22px 26px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:28px}
-.promo-code-panel h2{margin:3px 0 5px;color:var(--blue-deep);font-size:28px;letter-spacing:-.04em}
-.promo-code-panel p{margin:0;color:#718196;font-size:10px;line-height:1.55;max-width:650px}
-.promo-code-form{display:grid;gap:7px}.promo-code-form label{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#718196}
-.promo-code-form>div{display:flex;gap:7px}.promo-code-form input{min-width:0;flex:1;height:42px;border:1px solid #C7D7E8;border-radius:10px;background:#fff;padding:0 12px;outline:0;font-size:10px;text-transform:uppercase}.promo-code-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #E8F1FF}
-.promo-code-form button{height:42px;border:0;border-radius:10px;background:var(--blue);color:#fff;padding:0 15px;font-size:9px;font-weight:900;white-space:nowrap}.promo-code-form small{color:#7D8DA0;font-size:8px;line-height:1.4}
+.promo-code-panel{margin-top:16px;border:1px solid #D4E3F3;border-radius:16px;background:#fff;padding:15px 19px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;box-shadow:0 10px 28px rgba(31,76,135,.06)}
+.promo-code-copy{min-width:0}.promo-code-panel .eyebrow{margin-bottom:5px;font-size:8px}
+.promo-code-panel h2{margin:0 0 3px;color:var(--blue-deep);font-size:22px;letter-spacing:-.04em}
+.promo-code-panel p{margin:0;color:#718196;font-size:9px;line-height:1.45;max-width:600px}
+.promo-code-form{display:grid;gap:5px;min-width:min(390px,100%)}.promo-code-form label{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#718196}
+.promo-code-form>div{display:flex;gap:6px}.promo-code-form input{min-width:190px;width:220px;height:38px;border:1px solid #C7D7E8;border-radius:9px;background:#fff;padding:0 11px;outline:0;font-size:10px;text-transform:uppercase}.promo-code-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #E8F1FF}
+.promo-code-form button{height:38px;border:0;border-radius:9px;background:var(--blue);color:#fff;padding:0 14px;font-size:8px;font-weight:900;white-space:nowrap}.promo-code-form small{color:#7D8DA0;font-size:7px;line-height:1.35}
 
-@media(max-width:900px){
-  .promo-billboard{min-height:0}.promo-code-panel{grid-template-columns:1fr}
+@media(max-width:1000px){
+  .graphic-hero{grid-template-columns:1fr;gap:24px}
+  .promo-billboard{aspect-ratio:16 / 8.5}
 }
 @media(max-width:600px){
-  .promo-billboard{width:calc(100% - 20px);padding:13px;border-radius:24px}
-  .promo-billboard:before{inset:9px;border-radius:18px}.billboard-top{padding:3px 3px 11px}.billboard-top strong{font-size:15px}.billboard-top small{font-size:6px}
-  .promo-slide{grid-template-columns:1fr}.promo-art{min-height:205px}.promo-copy{padding:17px}.promo-copy h2{font-size:25px}.promo-copy p{font-size:9px}.promo-price strong{font-size:19px}.promo-cta{margin-top:12px}
-  .billboard-controls{padding-top:10px}
-  .promo-code-panel{width:calc(100% - 20px);padding:19px 16px;border-radius:18px;gap:18px}.promo-code-panel h2{font-size:26px}.promo-code-form>div{display:grid;grid-template-columns:1fr}.promo-code-form button{width:100%}
+  .graphic-hero{width:calc(100% - 20px);padding-top:22px;padding-bottom:26px}
+  .promo-billboard{width:100%;aspect-ratio:auto;padding:12px;border-radius:22px}
+  .promo-billboard:before{inset:8px;border-radius:16px}
+  .billboard-top{padding:2px 2px 9px}.billboard-top strong{font-size:14px}.billboard-top small{font-size:5px}
+  .promo-slide{height:auto;grid-template-columns:1fr}
+  .promo-art{height:185px;min-height:185px}
+  .promo-copy{padding:16px}.promo-copy h2{font-size:23px}.promo-copy p{font-size:9px}
+  .promo-price strong{font-size:19px}.promo-cta{margin-top:10px}
+  .billboard-controls{position:relative;bottom:auto;padding-top:9px}
+  .promo-code-panel{width:calc(100% - 20px);padding:16px 15px;border-radius:16px;grid-template-columns:1fr;gap:13px}
+  .promo-code-panel h2{font-size:24px}.promo-code-panel p{font-size:9px}
+  .promo-code-form{min-width:0}.promo-code-form>div{display:grid;grid-template-columns:1fr}.promo-code-form input{width:100%;min-width:0}.promo-code-form button{width:100%}
 }
