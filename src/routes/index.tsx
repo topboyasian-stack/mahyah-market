@@ -218,7 +218,7 @@ function Home({onCategory,onProduct,onAdd,onDeals}:{onCategory:(c:string)=>void;
 
     <section className="editorial-panel wrap">
       <div><span className="eyebrow">THE MAH-YAH FEEL</span><h2>A shopping experience designed for the phone in your hand.</h2><p>Large product visuals, short paths and obvious actions make the sample feel closer to a modern shopping app than a long traditional storefront.</p></div>
-      <div className="editorial-actions"><button className="primary-btn" onClick={()=>onCategory("Appliances")}>Explore appliances <Arrow/></button><button className="secondary-btn" onClick={()=>onDeals}>Browse deals</button></div>
+      <div className="editorial-actions"><button className="primary-btn" onClick={()=>onCategory("Appliances")}>Explore appliances <Arrow/></button><button className="secondary-btn" onClick={onDeals}>Browse deals</button></div>
     </section>
   </main>
 }
